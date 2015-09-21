@@ -1,3 +1,6 @@
+# This is the main python file
+# It grabs data from the UPS, formats it, and uploads it to the server
+
 import time
 import urllib2, urllib
 import subprocess
@@ -5,13 +8,13 @@ import re
 
 def main():
   #timing loop that checks the status and sends it to the server every so often (10 minutes or so)
-
+  # uncomment for production
   """
   while True:
     getStatus()
     send()
     #wait ten minutes
-    time.sleep(600)
+    time.sleep(600) #time to sleep in seconds
   """
 
   #for testing
@@ -20,14 +23,11 @@ def main():
 def send():
   #array of tuples in the form (variable, data)
 
-  #fake data for testing
-  mydata=[('state','Normal'),('capacity','100'),('lastEvent','Blackout at 2014/07/11 01:39:42')]
-
-  #for live use:
-  #mydata = getStatus()
+  #for live use, get status from UPS
+  mydata = getStatus()
 
   mydata=urllib.urlencode(mydata)
-  path='http://diverseanimals.com/storedata.php'    #the url you want to POST to
+  path='http://example-website.com/storedata.php' #the url you want to POST to
   req=urllib2.Request(path, mydata)
   req.add_header("Content-type", "application/x-www-form-urlencoded")
   page=urllib2.urlopen(req).read()
@@ -93,7 +93,7 @@ def getStatus():
   lastEvent = stat[s1.index(s2) + len(s2):]
 
   #put status values into array
-  status = [('state',state),('capacity',capacity),('lastEvent',lastEvent)]
+  status = [('state',state),('capacity',capacity),('lastEvent',lastEvent),('time',strftime("%Y-%m-%d %H:%M:%S"))]
   #return array
   return status
 
